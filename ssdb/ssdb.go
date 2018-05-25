@@ -17,11 +17,17 @@ func Connect(ip string, port int) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	sock, err := net.DialTCP("tcp", nil, addr)
+	d := net.Dialer{Timeout: 1 * time.Second}
+	conn, err := d.Dial("tcp", addr.String())
+	// sock, err := net.DialTCP("tcp", nil, addr)
 	if err != nil {
 		return nil, err
 	}
 	var c Client
+	sock, ok := conn.(*net.TCPConn)
+	if !ok {
+		return nil, errors.New("type assertion not valid")
+	}
 	c.sock = sock
 	return &c, nil
 }
@@ -75,7 +81,7 @@ func (c *Client) Del(key string) (interface{}, error) {
 }
 
 func (c *Client) Send(args ...interface{}) error {
-	return c.send(args);
+	return c.send(args)
 }
 
 func (c *Client) send(args []interface{}) error {
@@ -123,7 +129,7 @@ func (c *Client) send(args []interface{}) error {
 }
 
 func (c *Client) Recv() ([]string, error) {
-	return c.recv();
+	return c.recv()
 }
 
 func (c *Client) recv() ([]string, error) {
