@@ -2,9 +2,11 @@ package ssdb
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 	"strconv"
+	"time"
 )
 
 type Client struct {
